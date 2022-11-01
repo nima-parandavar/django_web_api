@@ -3,6 +3,12 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 from image.models import *
 
 
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+
 class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request: HttpRequest, view):
         if request.method in SAFE_METHODS:
@@ -24,7 +30,7 @@ class IsOwnerOrReadOnly(BasePermission):
 
         if isinstance(obj, Image):
             return bool(request.user and request.user.is_authenticated and
-                    obj.photographer.id == request.user.id)
+                        obj.photographer.id == request.user.id)
 
         if isinstance(obj, Collection):
             return bool(request.user and request.user.is_authenticated and

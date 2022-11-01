@@ -6,7 +6,8 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('image-api/', include('image.urls')),
-    path('auth-api/', include('account.urls'))
+    path('auth-api/', include('account.urls')),
+    path('action-api/', include('action.urls'))
 ]
 
 if settings.DEBUG:

@@ -70,23 +70,22 @@ class EmailConfirmView(APIView):
 
 
 class FollowActionAPIView(APIView):
-    # todo check if user is authenticated
-    # TODO: check if user do a similar action less than one min
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, **kwargs):
         serializer = FollowActionSerializer(data=request.data)
         if serializer.is_valid():
             user = get_object_or_404(CUser.active_users, id=serializer.validated_data['id'])
             if serializer.validated_data['id'] != request.user.id:
                 user_followers: list = request.user.following.values_list('id', flat=True)
-                # prevent user to do similar action in one minute
+
                 if user.id in user_followers:
-                    state = create_action(self.request.user, 'unfollow', user)
-                    if state:
-                        request.user.following.remove(user)
-                        return Response({'msg': 'user unfollowed'})
+                    request.user.following.remove(user)
+                    create_action(self.request.user, 'unfollow', user)
+                    return Response({'msg': 'user unfollowed'})
 
                 else:
-                    state = create_action(self.request.user, 'follow', user)
-                    if state:
-                        request.user.following.add(user)
-                        return Response({'msg': "user followed"})
+                    request.user.following.add(user)
+                    create_action(self.request.user, 'follow', user)
+                    return Response({'msg': "user followed"})

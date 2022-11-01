@@ -22,3 +22,9 @@ class Action(models.Model):
         ]
         ordering = ['-created']
 
+    def activity(self):
+        if self.verb == "like" or self.verb == 'disliked':
+            text = "your photo"
+        else:
+            text = "you"
+        return f"{self.user.get_full_name()} {self.verb} {text}"

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.views import APIView
 from drf_psq import PsqMixin, Rule
+from rest_framework.authentication import TokenAuthentication
 
 from .models import Image, Category, Collection
 from .serializers import (CategorySerializer, ImageSerializer, ImageUserSerializer,
@@ -92,7 +93,9 @@ class CollectionViewSet(PsqMixin, ModelViewSet):
 
 
 class LikeActionAPIView(APIView):
-    # todo check authentication user
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, **kwargs):
         serializer = LikeActionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
